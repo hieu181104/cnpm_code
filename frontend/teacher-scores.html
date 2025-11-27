@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhập điểm & Nhận xét</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #0047b3 0%, #003380 100%);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0, 71, 179, 0.2);
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar .user-info {
+            padding: 15px;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar .user-info div {
+            margin: 5px 0;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 14px 15px;
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            padding-left: 20px;
+            color: white;
+        }
+
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+            border-left: 4px solid white;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0047b3 0%, #003380 100%);
+            color: white;
+            padding: 25px 30px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 71, 179, 0.15);
+        }
+
+        .card {
+            margin: 20px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            text-align: center;
+            font-weight: bold;
+            color: #0047b3;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: linear-gradient(135deg, #0047b3 0%, #003380 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 71, 179, 0.25);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        select, button {
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #0047b3 0%, #003380 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 71, 179, 0.3);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #0047b3 0%, #003380 100%);
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        tr:hover {
+            background: #f8fbff;
+        }
+
+        input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1);
+        }
+
+        textarea {
+            height: 60px;
+            resize: vertical;
+        }
+
+        .conduct-select {
+            padding: 8px;
+            border-radius: 6px;
+            width: 100%;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .conduct-select:focus {
+            outline: none;
+            border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(22, 160, 133, 0.3);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 260px;
+            }
+
+            .main-content {
+                margin-left: 260px;
+            }
+
+            .header {
+                font-size: 20px;
+                padding: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            select, button {
+                width: 100%;
+            }
+
+            .steps {
+                gap: 10px;
+            }
+
+            .step {
+                min-width: auto;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Sổ Liên Lạc Điện Tử</h2>
+    <div class="user-info" style="padding:15px; color:#fff; background:rgba(255,255,255,0.1); border-radius:12px; margin:15px; text-align:center;">
+        <div style="font-weight:bold; font-size:18px;" id="teacherNameSidebar">GIÁO VIÊN</div>
+        <div style="font-size:14px; opacity:0.9;" id="homeroomSidebar">Lớp: ...</div>
+    </div>
+    <a href="teacher-dashboard.html">Tổng quan</a>
+    <a href="teacher-homeroom.html">Lớp chủ nhiệm</a>
+    <a href="teacher-attendance.html">Điểm danh học sinh</a>
+    <a href="teacher-attendance-history.html">Lịch sử điểm danh</a>
+    <a href="teacher-scores.html" class="active">Nhập điểm</a>
+    <a href="teacher-conduct.html">Ghi nhận vi phạm & khen thưởng</a>
+    <a href="teacher-leave-requests.html">Duyệt đơn xin nghỉ</a>
+    <a href="teacher-notifications.html">Gửi thông báo</a>
+    <a href="teacher-messages.html">Trao đổi với phụ huynh</a>
+    <a href="teacher-timetable.html">Xem thời khóa biểu</a>
+    <a href="teacher-profile.html">Hồ sơ cá nhân</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">NHẬP ĐIỂM & GỬI NHẬN XÉT</div>
+
+    <div class="card">
+        <div class="container">
+
+            <!-- Bước chọn -->
+            <div class="steps">
+                <div class="step active">Chọn lớp & môn</div>
+                <div class="step active">Nhập điểm</div>
+                <div class="step">Lưu thành công</div>
+            </div>
+
+            <div class="controls">
+                <select id="academicYearSelect"><option value="">Chọn năm học</option></select>
+                <select id="semesterSelect">
+                    <option value="">Chọn học kỳ</option>
+                    <option value="1">Học kỳ 1</option>
+                    <option value="2">Học kỳ 2</option>
+                </select>
+                <select id="classSelect"><option value="">Chọn lớp</option></select>
+                <select id="subjectSelect"><option value="">Chọn môn học</option></select>
+                <button onclick="loadStudents()">Tải danh sách học sinh</button>
+            </div>
+
+            <div class="table-container">
+                <table id="scoreTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Họ và tên</th>
+                            <th>HS1</th>
+                            <th>HS2</th>
+                            <th>HS3</th>
+                            <th>Điểm TB môn</th>
+                            <th>Hạnh kiểm</th>
+                            <th>Nhận xét của giáo viên</th>
+                            <th>Lưu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreBody">
+                        <tr><td colspan="9" class="no-data">Vui lòng chọn lớp và môn học để nhập điểm</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+
+    // Biến toàn cục lưu lựa chọn hiện tại
+    let currentYearID = null;
+    let currentSemesterID = null;
+    let currentClassID = null;
+    let currentSubjectID = null;
+
+    // Load danh sách năm học
+    async function loadAcademicYears() {
+        try {
+            const res = await fetch(`${API}/api/teacher/academic-years`, {
+                headers: { Authorization: "Bearer " + token }
+            });
+            if (!res.ok) throw new Error("Không tải được năm học");
+            const years = await res.json();
+
+            const select = document.getElementById("academicYearSelect");
+            select.innerHTML = '<option value="">Chọn năm học</option>';
+            years.forEach(y => {
+                const opt = document.createElement("option");
+                opt.value = y.YearID;
+                opt.textContent = y.AcademicYearName;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            alert("Lỗi tải năm học: " + err.message);
+        }
+    }
+
+    // Khi chọn năm học → tải lớp dạy trong năm đó
+    document.getElementById("academicYearSelect").onchange = async function () {
+        const yearID = this.value;
+        currentYearID = yearID;
+
+        const classSelect = document.getElementById("classSelect");
+        const subjectSelect = document.getElementById("subjectSelect");
+        classSelect.innerHTML = '<option value="">Chọn lớp</option>';
+        subjectSelect.innerHTML = '<option value="">Chọn môn học</option>';
+
+        if (!yearID) return;
+
+        try {
+            const res = await fetch(`${API}/api/teacher/teaching-classes?yearID=${yearID}`, {
+                headers: { Authorization: "Bearer " + token }
+            });
+            if (!res.ok) throw new Error("Không tải được lớp");
+            const data = await res.json();
+
+            data.forEach(cls => {
+                const opt = document.createElement("option");
+                opt.value = cls.ClassID;
+                opt.textContent = cls.ClassName;
+                opt.dataset.subjects = JSON.stringify(cls.Subjects);
+                classSelect.appendChild(opt);
+            });
+
+            // Khi chọn lớp → hiển thị môn
+            classSelect.onchange = function () {
+                const subjects = this.value ? JSON.parse(this.selectedOptions[0].dataset.subjects || "[]") : [];
+                subjectSelect.innerHTML = '<option value="">Chọn môn học</option>';
+                subjects.forEach(s => {
+                    const opt = document.createElement("option");
+                    opt.value = s.SubjectID;
+                    opt.textContent = s.SubjectName;
+                    subjectSelect.appendChild(opt);
+                });
+            };
+        } catch (err) {
+            alert("Lỗi tải lớp: " + err.message);
+        }
+    };
+
+    // Tải danh sách học sinh + điểm hiện tại
+    async function loadStudents() {
+        currentYearID = document.getElementById("academicYearSelect").value;
+        currentSemesterID = document.getElementById("semesterSelect").value;
+        currentClassID = document.getElementById("classSelect").value;
+        currentSubjectID = document.getElementById("subjectSelect").value;
+
+        if (!currentYearID || !currentSemesterID || !currentClassID || !currentSubjectID) {
+            alert("Vui lòng chọn đầy đủ: Năm học → Học kỳ → Lớp → Môn học");
+            return;
+        }
+
+        try {
+            const res = await fetch(
+                `${API}/api/teacher/scores?classID=${currentClassID}&subjectID=${currentSubjectID}&semesterID=${currentSemesterID}&yearID=${currentYearID}`,
+                { headers: { Authorization: "Bearer " + token } }
+            );
+            const data = await res.json();
+
+            const tbody = document.getElementById("scoreBody");
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="no-data">Không có học sinh nào trong lớp này</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map((s, i) => `
+                <tr data-studentid="${s.StudentID}">
+                    <td>${i + 1}</td>
+                    <td><strong>${s.Fullname}</strong></td>
+                    <td><input type="number" min="0" max="10" step="0.1" value="${s.Scorehs1 || ''}"></td>
+                    <td><input type="number" min="0" max="10" step="0.1" value="${s.Scorehs2 || ''}"></td>
+                    <td><input type="number" min="0" max="10" step="0.1" value="${s.Scorehs3 || ''}"></td>
+                    <td><strong>${s.ScoreTBM ? Number(s.ScoreTBM).toFixed(1) : 'Chưa có'}</strong></td>
+                    <td>
+                        <select class="conduct-select">
+                            ${['Tốt','Khá','Trung bình','Yếu'].map(hk => 
+                                `<option value="${hk}" ${s.Conduct === hk ? 'selected' : ''}>${hk}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td><textarea>${s.TeacherComment || ''}</textarea></td>
+                    <td>
+                        <button class="save-btn" onclick="saveSingle(${s.StudentID})">Lưu</button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi tải danh sách học sinh");
+        }
+    }
+
+    // Lưu điểm từng học sinh
+    async function saveSingle(studentID) {
+        const row = document.querySelector(`tr[data-studentid="${studentID}"]`);
+        if (!row) return;
+
+        const Scorehs1 = row.cells[2].querySelector("input").value.trim() || null;
+        const Scorehs2 = row.cells[3].querySelector("input").value.trim() || null;
+        const Scorehs3 = row.cells[4].querySelector("input").value.trim() || null;
+        const Conduct = row.cells[6].querySelector("select").value;
+        const TeacherComment = row.cells[7].querySelector("textarea").value.trim() || null;
+
+        const payload = {
+            StudentID: parseInt(studentID),
+            SubjectID: parseInt(currentSubjectID),
+            SemesterID: parseInt(currentSemesterID),
+            YearID: parseInt(currentYearID),
+            Scorehs1: Scorehs1 ? parseFloat(Scorehs1) : null,
+            Scorehs2: Scorehs2 ? parseFloat(Scorehs2) : null,
+            Scorehs3: Scorehs3 ? parseFloat(Scorehs3) : null,
+            Conduct,
+            TeacherComment
+        };
+
+        try {
+            const res = await fetch(`${API}/api/teacher/save-score`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("Lưu điểm thành công cho " + row.cells[1].textContent.trim());
+                loadStudents(); // Reload để thấy điểm mới
+            } else {
+                const err = await res.json();
+                alert("Lỗi: " + (err.error || "Không lưu được"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Lỗi kết nối server");
+        }
+    }
+
+    // Khởi động khi mở trang
+    window.onload = function () {
+        if (!token) {
+            alert("Chưa đăng nhập!");
+            window.location.href = "login.html";
+            return;
+        }
+        loadAcademicYears();
+    };
+</script>
+</body>
+</html>

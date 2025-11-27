@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trao đổi với giáo viên</title>
+    <!-- Removed admin.css link and added all CSS inline -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white;
+            padding: 24px 16px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 71, 179, 0.15);
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 32px;
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.25);
+            border-left: 4px solid white;
+            padding-left: 12px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0047b3;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+        }
+
+        /* Chat specific styles */
+        .chat-container { 
+            display: flex; 
+            height: calc(100vh - 300px); 
+            margin-top: 24px; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0, 71, 179, 0.12); 
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .teacher-list { 
+            width: 300px; 
+            background: linear-gradient(135deg, #f8fafb 0%, #f0f4fa 100%);
+            border-right: 2px solid #e2e8f0; 
+            padding: 12px; 
+            overflow-y: auto; 
+        }
+
+        .teacher-item { 
+            padding: 12px 14px; 
+            cursor: pointer; 
+            border-radius: 10px; 
+            transition: all 0.3s ease; 
+            margin-bottom: 6px;
+            border: 2px solid transparent;
+            background: white;
+        }
+
+        .teacher-item:hover { 
+            background: white;
+            border-color: #d4dce8;
+            transform: translateX(4px);
+        }
+
+        .teacher-item.active { 
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; 
+            border-color: #0047b3;
+            box-shadow: 0 4px 12px rgba(0, 71, 179, 0.2);
+        }
+
+        .teacher-item strong { 
+            font-weight: 700; 
+            display: block; 
+            font-size: 15px; 
+        }
+
+        .teacher-item small { 
+            font-size: 13px; 
+            opacity: 0.65; 
+            margin-top: 4px; 
+            display: block; 
+        }
+
+        .teacher-item.active small {
+            opacity: 0.85;
+        }
+
+        .chat-area { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: white; 
+        }
+
+        .messages-box { 
+            flex: 1; 
+            padding: 24px; 
+            overflow-y: auto; 
+            background: #fafbfc;
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+        }
+
+        .message { 
+            padding: 12px 16px; 
+            border-radius: 14px; 
+            max-width: 70%; 
+            word-wrap: break-word; 
+            font-size: 15px;
+            line-height: 1.5;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sent { 
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; 
+            align-self: flex-end; 
+            margin-left: auto; 
+            border-radius: 14px 4px 14px 14px;
+        }
+
+        .received { 
+            background: white; 
+            color: #2d3748; 
+            align-self: flex-start; 
+            border: 1px solid #e2e8f0;
+            border-radius: 4px 14px 14px 14px;
+        }
+
+        .message small {
+            opacity: 0.7;
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .input-area { 
+            padding: 18px; 
+            background: white;
+            border-top: 2px solid #e2e8f0;
+            display: flex; 
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        #messageInput { 
+            flex: 1; 
+            padding: 14px 16px; 
+            border-radius: 10px; 
+            border: 2px solid #e2e8f0;
+            font-family: inherit; 
+            font-size: 16px;
+            transition: all 0.2s ease;
+            resize: none;
+            max-height: 100px;
+        }
+
+        #messageInput:focus {
+            outline: none;
+            border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1);
+        }
+
+        #messageInput:disabled {
+            background: #f5f7fa;
+            opacity: 0.6;
+        }
+
+        #sendBtn { 
+            padding: 12px 24px; 
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 15px; 
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            height: 44px;
+        }
+
+        #sendBtn:hover:not(:disabled) { 
+            background: linear-gradient(135deg, #003d96 0%, #003080 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 71, 179, 0.25);
+        }
+
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+            }
+
+            .chat-container { 
+                height: calc(100vh - 260px); 
+                flex-direction: column; 
+            }
+
+            .teacher-list { 
+                width: 100%; 
+                border-right: none; 
+                border-bottom: 2px solid #e2e8f0;
+                max-height: 140px; 
+                padding: 8px; 
+            }
+
+            .message { 
+                max-width: 85%; 
+            }
+
+            #messageInput { 
+                font-size: 16px; 
+            }
+
+            #sendBtn {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Sổ Liên Lạc</h2>
+    <a href="parent-dashboard.html">Trang chủ</a>
+    <a href="parent-scores.html">Kết quả học tập</a>
+    <a href="parent-timetable.html">Thời khóa biểu</a>
+    <a href="parent-messages.html" class="active">Trao đổi</a>
+    <a href="parent-leave.html">Gửi đơn nghỉ</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">TRAO ĐỔI VỚI GIÁO VIÊN</div>
+    <div class="card">
+        <h3 id="studentName">Đang tải...</h3>
+        <div class="chat-container">
+            <div class="teacher-list" id="teacherList">
+                <p>Đang tải danh sách giáo viên...</p>
+            </div>
+            <div class="chat-area">
+                <div class="messages-box" id="messagesBox">
+                    <p style="text-align:center; color:#8892a8;">Chọn một giáo viên để bắt đầu trò chuyện</p>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="Nhập tin nhắn..." disabled />
+                    <button id="sendBtn" disabled>Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+    let currentReceiverID = null;
+
+    async function loadStudentInfo() {
+        const res = await fetch(`${API}/api/parent/student`, { headers: { Authorization: "Bearer " + token } });
+        const student = await res.json();
+        document.getElementById("studentName").innerText = 
+            `Trao đổi về học tập của: ${student.FullName || "con"} - Lớp ${student.ClassName || ""}`;
+    }
+
+    async function loadTeachers() {
+        const res = await fetch(`${API}/api/parent/teachers`, { headers: { Authorization: "Bearer " + token } });
+        const teachers = await res.json();
+        const list = document.getElementById("teacherList");
+        list.innerHTML = "";
+        teachers.forEach(t => {
+            const div = document.createElement("div");
+            div.className = "teacher-item";
+            div.innerHTML = `<strong>${t.Fullname}</strong><small>${t.RoleName}</small>`;
+            div.onclick = () => selectTeacher(t.UserID, t.Fullname);
+            list.appendChild(div);
+        });
+    }
+
+    function selectTeacher(teacherID, teacherName) {
+        currentReceiverID = teacherID;
+        document.querySelectorAll(".teacher-item").forEach(el => el.classList.remove("active"));
+        event.target.closest(".teacher-item").classList.add("active");
+        document.getElementById("messagesBox").innerHTML = `<p>Đang tải tin nhắn với <strong>${teacherName}</strong>...</p>`;
+        document.getElementById("messageInput").disabled = false;
+        document.getElementById("sendBtn").disabled = false;
+        loadMessages(teacherID);
+        setInterval(() => loadMessages(teacherID), 3000);
+    }
+
+    async function loadMessages(receiverID) {
+        const res = await fetch(`${API}/api/parent/messages/${receiverID}`, { headers: { Authorization: "Bearer " + token } });
+        const msgs = await res.json();
+        const box = document.getElementById("messagesBox");
+        box.innerHTML = "";
+        msgs.forEach(m => {
+            const div = document.createElement("div");
+            div.className = `message ${m.SenderID == JSON.parse(atob(token.split('.')[1])).UserID ? 'sent' : 'received'}`;
+            div.innerHTML = `<div><small>${new Date(m.SentTime).toLocaleString('vi-VN')}</small></div><div>${m.Contents}</div>`;
+            box.appendChild(div);
+        });
+        box.scrollTop = box.scrollHeight;
+    }
+
+    document.getElementById("sendBtn").onclick = async () => {
+        const input = document.getElementById("messageInput");
+        const content = input.value.trim();
+        if (!content || !currentReceiverID) return;
+        await fetch(`${API}/api/parent/messages`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+            body: JSON.stringify({ ReceiverID: currentReceiverID, Contents: content })
+        });
+        input.value = "";
+        loadMessages(currentReceiverID);
+    };
+
+    document.getElementById("messageInput").addEventListener("keypress", e => {
+        if (e.key === "Enter") document.getElementById("sendBtn").click();
+    });
+
+    loadStudentInfo();
+    loadTeachers();
+</script>
+</body>
+</html>

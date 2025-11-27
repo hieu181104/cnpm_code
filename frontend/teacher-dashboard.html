@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tổng quan - Giáo viên</title>
+    <style>
+        /* Removed admin.css link and added all styling inline */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+        
+        /* Sidebar styling */
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: 280px; height: 100vh;
+            background: linear-gradient(135deg, #0047b3 0%, #005ce6 100%);
+            color: white; padding-top: 20px; overflow-y: auto; z-index: 1000;
+            box-shadow: 0 8px 24px rgba(0, 71, 179, 0.2);
+        }
+        .sidebar h2 {
+            padding: 20px; font-size: 20px; text-align: center; font-weight: bold;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .sidebar a {
+            display: block; padding: 12px 20px; color: white; text-decoration: none;
+            border-left: 4px solid transparent; transition: all 0.3s ease;
+        }
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1); border-left-color: white;
+            padding-left: 24px;
+        }
+        .sidebar a.active { background: rgba(255, 255, 255, 0.2); border-left-color: white; font-weight: bold; }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 280px; padding: 30px; min-height: 100vh;
+            background: linear-gradient(to bottom, #f5f7fa, #eef2f7);
+        }
+
+        /* Header styling */
+        .header {
+            background: linear-gradient(135deg, #0047b3 0%, #005ce6 100%);
+            color: white; padding: 30px; border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 71, 179, 0.15);
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 32px; margin-bottom: 8px; }
+        .header h1 span { font-weight: bold; }
+        .header p { font-size: 14px; opacity: 0.9; }
+
+        /* Card styling */
+        .card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+
+        /* Grid layout */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin: 20px 0; }
+        .card-widget {
+            background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+            border-radius: 16px; padding: 24px; text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 6px solid #0047b3;
+            border-top: 2px solid rgba(0, 71, 179, 0.1);
+        }
+        .card-widget:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            border-top: 2px solid rgba(0, 71, 179, 0.3);
+        }
+        .card-widget h3 { margin: 0 0 12px; color: #0047b3; font-size: 17px; }
+        .number { font-size: 46px; font-weight: bold; color: #0047b3; margin: 8px 0; }
+        .info { color: #666; font-size: 15px; }
+
+        .classes { border-left-color: #16a085; } .classes .number { color: #16a085; }
+        .students { border-left-color: #2980b9; } .students .number { color: #2980b9; }
+        .pending { border-left-color: #e67e22; } .pending .number { color: #e67e22; }
+        .today { border-left-color: #8e44ad; } .today .number { color: #8e44ad; }
+
+        /* Quick action buttons */
+        .quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin: 30px 0; }
+        .btn {
+            background: linear-gradient(135deg, #0047b3, #005ce6);
+            color: white; padding: 20px; border-radius: 14px;
+            text-align: center; font-weight: bold; font-size: 17px;
+            cursor: pointer; transition: all 0.3s ease;
+            border: none; box-shadow: 0 6px 16px rgba(0, 71, 179, 0.2);
+        }
+        .btn:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 71, 179, 0.35);
+        }
+        .btn:active { transform: translateY(-2px); }
+
+        /* Schedule box */
+        .schedule-box {
+            background: white; border-radius: 16px; padding: 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin-top: 30px;
+        }
+        .schedule-box h3 { text-align: center; color: #0047b3; margin-top: 0; margin-bottom: 20px; font-size: 20px; }
+        .lesson {
+            padding: 14px; background: linear-gradient(135deg, #f8fbff, #ffffff);
+            border-radius: 12px; margin: 10px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid #0047b3;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .lesson:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #e8f0ff, #f8fbff);
+        }
+        .no-lesson { text-align: center; color: #999; font-style: italic; padding: 30px; }
+        .error { color: #e74c3c; text-align: center; padding: 20px; }
+
+        /* User info styling */
+        .user-info {
+            padding: 15px; color: white; background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px; margin: 15px; text-align: center;
+        }
+        .user-info div:first-child { font-weight: bold; font-size: 18px; }
+        .user-info div:last-child { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar { width: 240px; }
+            .main-content { margin-left: 240px; padding: 20px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 24px; }
+            .grid { gap: 16px; }
+            .card-widget { padding: 16px; }
+            .number { font-size: 36px; }
+            .quick { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar { width: 0; display: none; }
+            .main-content { margin-left: 0; }
+            .card { padding: 16px; }
+            .header h1 { font-size: 20px; }
+            .lesson { flex-direction: column; align-items: flex-start; }
+            .lesson div:last-child { align-self: flex-start; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Sổ Liên Lạc Điện Tử</h2>
+    <div class="user-info">
+        <div id="teacherNameSidebar">GIÁO VIÊN</div>
+        <div id="homeroomSidebar">Đang tải lớp...</div>
+    </div>
+    <a href="teacher-dashboard.html" class="active">Tổng quan</a>
+    <a href="teacher-homeroom.html">Lớp chủ nhiệm</a>
+    <a href="teacher-attendance.html">Điểm danh học sinh</a>
+    <a href="teacher-attendance-history.html">Lịch sử điểm danh</a>
+    <a href="teacher-scores.html">Nhập điểm</a>
+    <a href="teacher-conduct.html">Ghi nhận vi phạm & khen thưởng</a>
+    <a href="teacher-leave-requests.html">Duyệt đơn xin nghỉ</a>
+    <a href="teacher-notifications.html">Gửi thông báo</a>
+    <a href="teacher-messages.html">Trao đổi với phụ huynh</a>
+    <a href="teacher-timetable.html">Xem thời khóa biểu</a>
+    <a href="teacher-profile.html">Hồ sơ cá nhân</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h1>XIN CHÀO, <span id="teacherName">GIÁO VIÊN</span>!</h1>
+        <p id="today">Thứ Năm, ngày 27 tháng 11 năm 2025, 15:13</p>
+    </div>
+
+    <div class="card">
+        <div style="padding:20px; text-align:center; background:linear-gradient(135deg, #f8fbff, #ffffff); border-radius:12px; margin-bottom:20px; border-left:5px solid #0047b3;">
+            <strong id="homeroom">Đang tải lớp chủ nhiệm...</strong>
+        </div>
+
+        <div class="grid">
+            <div class="card-widget classes">
+                <h3>Số lớp đang dạy</h3>
+                <div class="number" id="totalClasses">0</div>
+                <div class="info">Học kỳ này</div>
+            </div>
+            <div class="card-widget students">
+                <h3>Tổng học sinh</h3>
+                <div class="number" id="totalStudents">0</div>
+                <div class="info">Theo dõi</div>
+            </div>
+            <div class="card-widget pending">
+                <h3>Đơn nghỉ chờ duyệt</h3>
+                <div class="number" id="pendingLeaves">0</div>
+                <div class="info">Cần xử lý</div>
+            </div>
+            <div class="card-widget today">
+                <h3>Tiết dạy hôm nay</h3>
+                <div class="number" id="todayLessons">0</div>
+                <div class="info">Buổi học</div>
+            </div>
+        </div>
+
+        <div class="quick">
+            <div class="btn" onclick="location.href='teacher-attendance.html'">ĐIỂM DANH</div>
+            <div class="btn" onclick="location.href='teacher-leave-requests.html'">DUYỆT ĐƠN NGHỈ</div>
+            <div class="btn" onclick="location.href='teacher-scores.html'">NHẬP ĐIỂM</div>
+            <div class="btn" onclick="location.href='teacher-notifications.html'">GỬI THÔNG BÁO</div>
+        </div>
+
+        <div class="schedule-box">
+            <h3>LỊCH DẠY HÔM NAY</h3>
+            <div id="todaySchedule">
+                <div class="no-lesson">Đang tải lịch dạy...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+
+    // Hiển thị thời gian hiện tại
+    function updateTime() {
+        const now = new Date();
+        document.getElementById("today").textContent = now.toLocaleString('vi-VN', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    async function loadDashboard() {
+        if (!token) {
+            document.querySelector(".card").innerHTML = '<div class="error">Vui lòng đăng nhập lại!</div>';
+            return;
+        }
+
+        try {
+            // 1. Thông tin giáo viên + lớp chủ nhiệm
+            const profileRes = await fetch(`${API}/api/teacher/profile`, {
+                headers: { Authorization: "Bearer " + token }
+            });
+            const profile = await profileRes.json();
+            if (!profileRes.ok) throw new Error(profile.error || "Lỗi tải thông tin giáo viên");
+            document.getElementById("teacherName").textContent = profile.Fullname || "GIÁO VIÊN";
+            document.getElementById("teacherNameSidebar").textContent = profile.Fullname || "GIÁO VIÊN";
+            document.getElementById("homeroom").textContent = profile.HomeroomClass 
+                ? `Lớp chủ nhiệm: ${profile.HomeroomClass}` 
+                : "Chưa được phân công lớp chủ nhiệm";
+            document.getElementById("homeroomSidebar").textContent = profile.HomeroomClass 
+                ? `Lớp: ${profile.HomeroomClass}` 
+                : "Chưa có lớp chủ nhiệm";
+
+            // 2. Thống kê
+            const statsRes = await fetch(`${API}/api/teacher/stats`, {
+                headers: { Authorization: "Bearer " + token }
+            });
+            const stats = await statsRes.json();
+            if (!statsRes.ok) throw new Error(stats.error || "Lỗi tải thống kê");
+            document.getElementById("totalClasses").textContent = stats.totalClasses || 0;
+            document.getElementById("totalStudents").textContent = stats.totalStudents || 0;
+            document.getElementById("pendingLeaves").textContent = stats.pendingLeaves || 0;
+            document.getElementById("todayLessons").textContent = stats.todayLessons || 0;
+
+            // 3. Lịch dạy hôm nay
+            const schedRes = await fetch(`${API}/api/teacher/today-schedule`, {
+                headers: { Authorization: "Bearer " + token }
+            });
+            const schedule = await schedRes.json();
+            if (!schedRes.ok) throw new Error(schedule.error || "Lỗi tải lịch dạy");
+            const container = document.getElementById("todaySchedule");
+            if (schedule.length === 0) {
+                container.innerHTML = `<div class="no-lesson">Hôm nay bạn không có tiết dạy nào</div>`;
+            } else {
+                container.innerHTML = schedule.map(t => `
+                    <div class="lesson">
+                        <div>
+                            <strong>Lớp ${t.ClassName}</strong> - Tiết ${t.LessonSlot}<br>
+                            <small>Phòng: ${t.Room || "Chưa có"}</small>
+                        </div>
+                        <div style="text-align:right; color:#0047b3; font-weight:bold;">
+                            ${new Date(t.LessonDate).toLocaleDateString('vi-VN')}
+                        </div>
+                    </div>
+                `).join("");
+            }
+
+        } catch (err) {
+            console.error("Lỗi dashboard:", err);
+            document.querySelector(".card").innerHTML = `<div class="error">Lỗi: ${err.message}. Vui lòng kiểm tra server hoặc liên hệ admin.</div>`;
+        }
+    }
+
+    loadDashboard();
+    setInterval(loadDashboard, 60000); // Cập nhật mỗi phút
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <title>Quản lý lớp học</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Sổ Liên Lạc</h2>
+        <a href="admin-dashboard.html">Dashboard</a>
+        <a href="admin-users.html">Quản lý tài khoản</a>
+        <a class="active" href="admin-classes.html">Quản lý lớp học</a>
+        <a href="admin-subjects.html">Môn học</a>
+        <a href="admin-timetable.html">Thời khóa biểu</a>
+        <a href="admin-report.html">Thống kê</a>
+        <a href="admin-notify.html">Thông báo</a>
+        <a href="login.html" onclick="localStorage.removeItem('token')">Đăng xuất</a>
+    </div>
+
+    <div class="content">
+        <h1>Quản lý lớp học</h1>
+
+        <!-- Chọn năm học -->
+        <label>Năm học:</label>
+        <select id="yearSelect"></select>
+
+        <!-- Form thêm / sửa lớp -->
+        <h2>Thêm / Cập nhật lớp</h2>
+
+        <div class="form-row">
+            <input type="hidden" id="ClassID">
+            <label>Tên lớp:</label>
+            <input type="text" id="ClassName">
+        </div>
+
+        <div class="form-row">
+            <label>Giáo viên chủ nhiệm:</label>
+            <select id="teacherSelect"></select>
+        </div>
+
+        <button onclick="saveClass()">Lưu lớp</button>
+        <hr>
+
+        <h2>Danh sách lớp</h2>
+        <table border="1" width="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Lớp</th>
+                    <th>Năm học</th>
+                    <th>GVCN</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="classTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "login.html";
+
+const API = "http://localhost:3000";
+
+// Load danh sách năm học
+async function loadYears() {
+    let res = await fetch(`${API}/admin/years`, {
+        headers: { Authorization: "Bearer " + token }
+    });
+    let years = await res.json();
+
+    let yearSelect = document.getElementById("yearSelect");
+    yearSelect.innerHTML = "";
+
+    years.forEach(y => {
+        yearSelect.innerHTML += `<option value="${y.YearID}">${y.AcademicYearName}</option>`;
+    });
+
+    loadTeachers();
+    loadClasses();
+}
+
+// Load giáo viên (Role = 2)
+async function loadTeachers() {
+    let res = await fetch(`${API}/admin/teachers`, {
+        headers: { Authorization: "Bearer " + token }
+    });
+    let data = await res.json();
+
+    let select = document.getElementById("teacherSelect");
+    select.innerHTML = `<option value="">-- Chọn giáo viên --</option>`;
+
+    data.forEach(t => {
+        select.innerHTML += `<option value="${t.UserID}">${t.Fullname}</option>`;
+    });
+}
+
+// Load lớp theo năm học
+async function loadClasses() {
+    let year = document.getElementById("yearSelect").value;
+
+    let res = await fetch(`${API}/admin/classes/${year}`, {
+        headers: { Authorization: "Bearer " + token }
+    });
+
+    let classes = await res.json();
+    let table = document.getElementById("classTable");
+    table.innerHTML = "";
+
+    classes.forEach(c => {
+        table.innerHTML += `
+        <tr>
+            <td>${c.ClassID}</td>
+            <td>${c.ClassName}</td>
+            <td>${c.AcademicYearName}</td>
+            <td>${c.TeacherName ?? "—"}</td>
+            <td>
+                <button onclick="editClass(${c.ClassID}, '${c.ClassName}', '${c.HomeroomTeacherID ?? ""}')">Sửa</button>
+                <button onclick="deleteClass(${c.ClassID})">Xóa</button>
+            </td>
+        </tr>`;
+    });
+}
+
+function editClass(id, name, HomeroomTeacherID) {
+    document.getElementById("ClassID").value = id;
+    document.getElementById("ClassName").value = name;
+    document.getElementById("teacherSelect").value = HomeroomTeacherID;
+}
+
+async function saveClass() {
+    let id = document.getElementById("ClassID").value;
+    let name = document.getElementById("ClassName").value;
+    let teacher = document.getElementById("teacherSelect").value;
+    let year = document.getElementById("yearSelect").value;
+
+    let body = { ClassName: name, HomeroomTeacherID: teacher, YearID: year };
+
+    let url = `${API}/admin/class`;
+    let method = id ? "PUT" : "POST";
+
+    if (id) body.ClassID = id;
+
+    await fetch(url, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+        },
+        body: JSON.stringify(body)
+    });
+
+    alert("Đã lưu");
+    loadClasses();
+}
+
+// Xóa lớp
+async function deleteClass(id) {
+    if (!confirm("Chắc chắn muốn xóa lớp này?")) return;
+
+    await fetch(`${API}/admin/class/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+    });
+
+    loadClasses();
+}
+
+document.getElementById("yearSelect").addEventListener("change", loadClasses);
+
+loadYears();
+</script>
+</body>
+</html>

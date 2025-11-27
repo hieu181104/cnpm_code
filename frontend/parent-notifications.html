@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #0047b3 0%, #003d94 100%);
+            color: white;
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .sidebar h2 {
+            padding: 0 20px 24px;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #4da6ff;
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: #ffd700;
+            color: white;
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0047b3;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+        .filter-buttons { display: flex; justify-content: center; gap: 16px; margin: 28px 0; flex-wrap: wrap; }
+        .btn { padding: 12px 28px; border: 2px solid #d0d8e8; background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; transition: all 0.3s ease; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn.active { background: linear-gradient(135deg, #0047b3 0%, #003d94 100%); color: white; border-color: #0047b3; box-shadow: 0 4px 12px rgba(0, 71, 179, 0.3); }
+        .notification-item { background: white; padding: 20px; margin-bottom: 16px; border-radius: 10px; border-left: 4px solid #0047b3; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .notification-item.unread { background: #f0f8ff; border-left-color: #fa8c16; }
+        .notification-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.12); transform: translateX(4px); }
+        .noti-title { font-size: 17px; color: #0047b3; margin: 0; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+        .badge { background: linear-gradient(135deg, #fa8c16 0%, #d4380d 100%); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .noti-time { font-size: 14px; color: #8892a8; margin-top: 8px; }
+        .noti-content { margin-top: 14px; line-height: 1.7; display: none; color: #2d3748; font-size: 15px; }
+        .notification-item.open .noti-content { display: block; animation: slideDown 0.3s ease; }
+        .empty { text-align: center; padding: 60px 20px; color: #8892a8; font-size: 16px; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .filter-buttons { flex-direction: column; gap: 12px; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h2>Sổ Liên Lạc</h2>
+    <a href="parent-dashboard.html">Trang chủ</a>
+    <a href="parent-scores.html">Kết quả học tập</a>
+    <a href="parent-timetable.html">Thời khóa biểu</a>
+    <a href="parent-messages.html">Trao đổi</a>
+    <a href="parent-leave.html">Gửi đơn nghỉ</a>
+    <a href="parent-profile.html">Hồ sơ cá nhân</a>
+    <a href="parent-notifications.html" class="active">Thông báo</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">THÔNG BÁO</div>
+    <div class="card">
+        <div class="container">
+            <div class="filter-buttons">
+                <button class="btn active" data-filter="all">Tất cả</button>
+                <button class="btn" data-filter="unread">Chưa đọc (<span id="unreadCount">0</span>)</button>
+            </div>
+            <div id="notificationList"><div class="empty">Đang tải...</div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+    const uid = JSON.parse(atob(token.split('.')[1])).UserID;
+    const storageKey = "notif_read_" + uid;
+    let allNotifications = [];
+
+    function getReadNotifications() { return JSON.parse(localStorage.getItem(storageKey) || "[]"); }
+    function markAsRead(id) { 
+        const read = getReadNotifications(); 
+        if (!read.includes(id)) { 
+            read.push(id); 
+            localStorage.setItem(storageKey, JSON.stringify(read)); 
+        } 
+    }
+
+    async function loadNotifications() {
+        try {
+            const res = await fetch(`${API}/api/parent/notifications`, { headers: { Authorization: "Bearer " + token } });
+            allNotifications = await res.json();
+            const read = getReadNotifications();
+            allNotifications.forEach(n => n.isRead = read.includes(n.NotificationID));
+            renderNotifications("all");
+        } catch (err) {
+            document.getElementById("notificationList").innerHTML = `<div class="empty">Lỗi server</div>`;
+        }
+    }
+
+    function renderNotifications(filter) {
+        let displayed = allNotifications.filter(n => n.SendWeb === 1);
+        if (filter === "unread") displayed = displayed.filter(n => !n.isRead);
+
+        const unread = allNotifications.filter(n => n.SendWeb === 1 && !n.isRead).length;
+        document.getElementById("unreadCount").textContent = unread;
+
+        if (displayed.length === 0) {
+            document.getElementById("notificationList").innerHTML = `<div class="empty">Không có thông báo nào.</div>`;
+            return;
+        }
+
+        document.getElementById("notificationList").innerHTML = displayed.map(n => `
+            <div class="notification-item ${!n.isRead ? 'unread' : ''}" onclick="
+                this.classList.toggle('open');
+                if (this.classList.contains('unread')) {
+                    this.classList.remove('unread');
+                    markAsRead(${n.NotificationID});
+                    const cnt = allNotifications.filter(x => x.SendWeb === 1 && !getReadNotifications().includes(x.NotificationID)).length;
+                    document.getElementById('unreadCount').textContent = cnt || '';
+                }
+            ">
+                <div class="noti-title">
+                    ${n.Title}
+                    ${!n.isRead ? '<span class="badge">Mới</span>' : ''}
+                </div>
+                <div class="noti-time">${formatTime(n.CreateTime)}</div>
+                <div class="noti-content">${n.Content.replace(/\n/g, '<br>')}</div>
+            </div>
+        `).join("");
+    }
+
+    function formatTime(dateStr) {
+        const date = new Date(dateStr);
+        const diff = Date.now() - date;
+        const m = Math.floor(diff / 60000);
+        if (m < 1) return "Vừa xong";
+        if (m < 60) return m + " phút trước";
+        if (m < 1440) return Math.floor(m / 60) + " giờ trước";
+        return date.toLocaleDateString('vi-VN');
+    }
+
+    document.querySelectorAll(".btn").forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll(".btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderNotifications(btn.dataset.filter);
+        };
+    });
+
+    loadNotifications();
+    setInterval(loadNotifications, 30000);
+</script>
+</body>
+</html>

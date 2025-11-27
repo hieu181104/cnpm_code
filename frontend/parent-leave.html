@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi đơn xin nghỉ học</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #0047b3 0%, #0057d8 100%);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            border-left: 3px solid white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0047b3 0%, #0057d8 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #0047b3;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        /* Removed admin.css dependency and added all styles inline */
+        .form-container { max-width: 800px; margin: 0 auto; }
+        .header-title { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 12px; color: #0047b3; }
+        .divider { text-align: center; text-decoration: underline; font-weight: 700; margin-bottom: 28px; font-size: 15px; }
+        .date-display { text-align: right; margin: 24px 0 36px; font-style: italic; color: #8892a8; font-size: 15px; }
+        .sub-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 32px; color: #2d3748; }
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-weight: 600; margin-bottom: 10px; color: #2d3748; font-size: 15px; }
+        input, textarea, select { width: 100%; padding: 14px 16px; border: 1px solid #d0d8e8; border-radius: 8px; font-size: 16px; font-family: inherit; transition: all 0.2s ease; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #0047b3; box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1); }
+        textarea { height: 140px; resize: vertical; }
+        .btn-group { text-align: center; margin-top: 36px; margin-bottom: 32px; }
+        button { padding: 14px 40px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-send { background: linear-gradient(135deg, #0047b3 0%, #0057d8 100%); color: white; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0, 71, 179, 0.2); }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 71, 179, 0.3); }
+        .request-list { margin-top: 48px; padding-top: 36px; border-top: 2px solid #e8eef5; }
+        .request-list h3 { color: #0047b3; margin-bottom: 24px; font-size: 18px; font-weight: 600; }
+        .request-item { padding: 20px; background: #f9fafc; border-left: 4px solid #0047b3; margin-bottom: 18px; border-radius: 8px; transition: all 0.2s ease; font-size: 15px; line-height: 1.8; }
+        .request-item:hover { box-shadow: 0 2px 8px rgba(0, 71, 179, 0.15); transform: translateX(4px); }
+        .status-pending { color: #fa8c16; font-weight: 600; }
+        .status-approved { color: #52c41a; font-weight: 600; }
+        .status-rejected { color: #d4380d; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; display: flex; flex-wrap: wrap; padding: 15px; }
+            .sidebar h2 { flex-basis: 100%; margin-bottom: 15px; }
+            .sidebar a { flex: 1; min-width: 120px; margin-bottom: 5px; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .form-container { padding: 0; }
+            button { padding: 12px 24px; font-size: 15px; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Sổ Liên Lạc</h2>
+    <a href="parent-dashboard.html">Trang chủ</a>
+    <a href="parent-scores.html">Kết quả học tập</a>
+    <a href="parent-timetable.html">Thời khóa biểu</a>
+    <a href="parent-messages.html">Trao đổi</a>
+    <a href="parent-leave.html" class="active">Gửi đơn nghỉ</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">GỬI ĐƠN XIN NGHỈ HỌC</div>
+
+    <div class="card">
+        <h3 id="studentInfo">Đang tải...</h3>
+
+        <div class="form-container">
+            <div class="header-title">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+            <div class="divider">Độc lập - Tự do - Hạnh phúc</div>
+            <div class="date-display" id="currentDate"></div>
+
+            <div class="sub-title">ĐƠN XIN NGHỈ HỌC</div>
+
+            <div class="form-group">
+                <label>Kính gửi:</label>
+                <input type="text" id="teacherReceiver" value="Đang tải..." disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Họ và tên học sinh:</label>
+                <input type="text" id="studentName" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Lớp:</label>
+                <input type="text" id="className" disabled>
+            </div>
+
+            <div class="form-group">
+                <label>Loại đơn xin nghỉ:</label>
+                <select id="reasonType" required>
+                    <option value="">-- Chọn lý do --</option>
+                    <option value="Ốm đau phải điều trị">Ốm đau phải điều trị</option>
+                    <option value="Việc gia đình đột xuất">Việc gia đình đột xuất</option>
+                    <option value="Tai nạn, bệnh hiểm nghèo">Tai nạn, bệnh hiểm nghèo</option>
+                    <option value="Lý do cá nhân khác">Lý do cá nhân khác</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nghỉ từ ngày:</label>
+                <input type="date" id="fromDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Đến ngày:</label>
+                <input type="date" id="toDate" required>
+            </div>
+
+            <div class="form-group">
+                <label>Lý do chi tiết:</label>
+                <textarea id="reasonDetail" placeholder="Ghi rõ lý do, nếu ốm thì ghi bệnh, có giấy khám kèm theo..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Họ tên phụ huynh:</label>
+                <input type="text" id="parentName" disabled>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-send" onclick="sendRequest()">GỬI ĐƠN</button>
+            </div>
+        </div>
+
+        <div class="request-list">
+            <h3>DANH SÁCH ĐƠN ĐÃ GỬI</h3>
+            <div id="requestList">Đang tải...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+
+    function updateCurrentDate() {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        document.getElementById("currentDate").textContent = `..., ngày ${day} tháng ${month} năm ${year}`;
+    }
+
+    async function loadStudentInfo() {
+        try {
+            const res = await fetch(`${API}/api/parent/student`, { headers: { Authorization: "Bearer " + token } });
+            const s = await res.json();
+            document.getElementById("studentInfo").innerText = `Gửi đơn xin nghỉ học cho: ${s.FullName} - Lớp ${s.ClassName}`;
+            document.getElementById("studentName").value = s.FullName || "";
+            document.getElementById("className").value = s.ClassName || "";
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            document.getElementById("parentName").value = payload.Fullname || "Phụ huynh";
+            const teacherRes = await fetch(`${API}/api/parent/homeroom-teacher`, { headers: { Authorization: "Bearer " + token } });
+            const teacher = await teacherRes.json();
+            document.getElementById("teacherReceiver").value = 
+                `Ban Giám hiệu & Thầy/Cô ${teacher.Fullname || "Giáo viên chủ nhiệm"} - Lớp ${s.ClassName}`;
+        } catch (err) {
+            console.error("Lỗi load info:", err);
+        }
+    }
+
+    async function sendRequest() {
+        const reasonType = document.getElementById("reasonType").value;
+        const fromDate = document.getElementById("fromDate").value;
+        const toDate = document.getElementById("toDate").value;
+        const detail = document.getElementById("reasonDetail").value.trim();
+        if (!reasonType || !fromDate || !toDate || !detail) {
+            alert("Vui lòng điền đầy đủ thông tin!");
+            return;
+        }
+        const fullReason = `${reasonType}: ${detail}`;
+        const res = await fetch(`${API}/api/parent/requests`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+            body: JSON.stringify({ Reason: fullReason, FromDate: fromDate, ToDate: toDate })
+        });
+        if (res.ok) {
+            alert("Đã gửi đơn thành công! Giáo viên sẽ phản hồi sớm.");
+            document.getElementById("reasonType").value = "";
+            document.getElementById("fromDate").value = "";
+            document.getElementById("toDate").value = "";
+            document.getElementById("reasonDetail").value = "";
+            loadRequests();
+        } else {
+            const error = await res.text();
+            alert("Gửi thất bại: " + error);
+        }
+    }
+
+    async function loadRequests() {
+        const res = await fetch(`${API}/api/parent/requests`, { headers: { Authorization: "Bearer " + token } });
+        const requests = await res.json();
+        const list = document.getElementById("requestList");
+        if (requests.length === 0) {
+            list.innerHTML = "<p>Chưa có đơn nào được gửi.</p>";
+            return;
+        }
+        list.innerHTML = requests.map(r => `
+            <div class="request-item">
+                <strong>Ngày gửi:</strong> ${new Date(r.CreatTime).toLocaleDateString('vi-VN')}<br>
+                <strong>Nghỉ từ:</strong> ${new Date(r.FromDate).toLocaleDateString('vi-VN')} → <strong>đến:</strong> ${new Date(r.ToDate).toLocaleDateString('vi-VN')}<br>
+                <strong>Lý do:</strong> ${r.Reason}<br>
+                <strong>Trạng thái:</strong> <span class="status-${r.Status === 'Đã duyệt' ? 'approved' : r.Status === 'Từ chối' ? 'rejected' : 'pending'}">${r.Status || "Đang chờ duyệt"}</span>
+                ${r.TeacherNote ? `<br><em>Ghi chú GV: ${r.TeacherNote}</em>` : ""}
+            </div>
+        `).join("");
+    }
+
+    updateCurrentDate();
+    loadStudentInfo();
+    loadRequests();
+</script>
+</body>
+</html>

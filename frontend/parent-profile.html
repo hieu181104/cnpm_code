@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý hồ sơ cá nhân</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; left: 0; top: 0; width: 250px; height: 100vh;
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; overflow-y: auto; z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar h2 { padding: 24px 20px; font-size: 20px; border-bottom: 2px solid rgba(255,255,255,0.1); }
+        .sidebar a {
+            display: block; padding: 12px 20px; color: white; text-decoration: none;
+            transition: all 0.2s ease; border-left: 3px solid transparent;
+        }
+        .sidebar a:hover { background: rgba(255,255,255,0.1); border-left-color: white; }
+        .sidebar a.active { background: rgba(255,255,255,0.15); border-left-color: #52c41a; }
+
+        /* Main Content */
+        .main-content { margin-left: 250px; padding: 24px; }
+        .header {
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; padding: 20px 24px; border-radius: 12px; font-size: 22px;
+            font-weight: 600; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0, 71, 179, 0.2);
+        }
+
+        /* Card Container */
+        .card {
+            background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        /* Profile Container */
+        .profile-container { padding: 32px; }
+        .profile-header {
+            text-align: center; padding-bottom: 24px; margin-bottom: 32px;
+            border-bottom: 2px solid #e8eef5;
+        }
+
+        .avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #0047b3 0%, #003d96 100%);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 40px; margin: 0 auto 16px;
+            box-shadow: 0 4px 12px rgba(0, 71, 179, 0.25);
+        }
+
+        .profile-header h2 { color: #0047b3; margin: 12px 0 8px; font-size: 20px; }
+        .profile-header p { color: #8892a8; font-size: 14px; }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            background: #f9fafc; padding: 20px; border-radius: 10px; margin-bottom: 24px;
+        }
+
+        .form-group { margin-bottom: 0; }
+        label {
+            display: block; font-weight: 600; margin-bottom: 8px;
+            color: #2d3748; font-size: 14px;
+        }
+
+        input, select {
+            width: 100%; padding: 12px 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 14px; background: white;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none; border-color: #0047b3;
+            box-shadow: 0 0 0 3px rgba(0, 71, 179, 0.1);
+        }
+
+        input:disabled, select:disabled { background: #eee; color: #555; cursor: not-allowed; }
+
+        /* Buttons */
+        .btn-group { text-align: center; margin: 32px 0 24px; }
+        button {
+            padding: 12px 40px; font-size: 14px; border: none;
+            border-radius: 8px; cursor: pointer; margin: 0 10px;
+            transition: all 0.2s ease; font-weight: 600;
+        }
+
+        .btn-edit {
+            background: #0047b3; color: white;
+        }
+        .btn-edit:hover { background: #003d96; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 71, 179, 0.3); }
+
+        .btn-save {
+            background: #52c41a; color: white;
+        }
+        .btn-save:hover { background: #43a50f; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3); }
+
+        .btn-cancel {
+            background: #d4380d; color: white;
+        }
+        .btn-cancel:hover { background: #b82e0e; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(212, 56, 13, 0.3); }
+
+        /* Children Section */
+        .children-section {
+            margin-top: 48px; padding-top: 32px;
+            border-top: 2px solid #e8eef5;
+        }
+
+        .children-section h3 {
+            color: #0047b3; text-align: center; margin-bottom: 24px;
+            font-size: 18px; font-weight: 600;
+        }
+
+        .child-card {
+            background: linear-gradient(135deg, #f9fafc 0%, #f0f4f9 100%);
+            border: 1px solid #e8eef5; border-radius: 12px; padding: 20px;
+            margin-bottom: 16px; display: flex; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .child-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 71, 179, 0.15);
+            transform: translateY(-2px);
+            border-color: #0047b3;
+        }
+
+        .child-avatar {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: linear-gradient(135deg, #0047b3 0%, #52c41a 100%);
+            color: white; font-size: 28px; display: flex;
+            align-items: center; justify-content: center;
+            margin-right: 20px; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 71, 179, 0.2);
+        }
+
+        .child-info h4 { margin: 0 0 8px; color: #0047b3; font-size: 16px; }
+        .child-info p { margin: 4px 0; color: #8892a8; font-size: 14px; }
+
+        .success-msg {
+            text-align: center; color: #52c41a; font-weight: 600;
+            margin-top: 16px; display: none; padding: 12px;
+            background: #f0ffe5; border-radius: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; padding: 16px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .child-card { flex-direction: column; text-align: center; }
+            .child-avatar { margin-right: 0; margin-bottom: 16px; }
+            button { padding: 10px 20px; font-size: 14px; margin: 5px; }
+            .profile-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Sổ Liên Lạc</h2>
+    <a href="parent-dashboard.html">Trang chủ</a>
+    <a href="parent-scores.html">Kết quả học tập</a>
+    <a href="parent-timetable.html">Thời khóa biểu</a>
+    <a href="parent-messages.html">Trao đổi</a>
+    <a href="parent-leave.html">Gửi đơn nghỉ</a>
+    <a href="parent-profile.html" class="active">Hồ sơ cá nhân</a>
+    <a href="#" onclick="logout()">Đăng xuất</a>
+</div>
+
+<div class="main-content">
+    <div class="header">HỒ SƠ CÁ NHÂN</div>
+
+    <div class="card">
+        <div class="profile-container">
+
+            <!-- Phần phụ huynh -->
+            <div class="profile-header">
+                <div class="avatar" id="avatar">PH</div>
+                <h2 id="fullNameDisplay">Đang tải...</h2>
+                <p>Phụ huynh học sinh</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Họ và tên</label>
+                    <input type="text" id="fullname" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <input type="text" id="username" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" id="phone" placeholder="Chưa có số điện thoại">
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <input type="text" id="address" placeholder="Chưa cập nhật địa chỉ">
+                </div>
+                <div class="form-group">
+                    <label>Giới tính</label>
+                    <select id="gender">
+                        <option value="">Chưa chọn</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-edit" id="btnEdit" onclick="enableEdit()">CHỈNH SỬA</button>
+                <button class="btn-save" id="btnSave" onclick="saveProfile()" style="display:none;">LƯU THAY ĐỔI</button>
+                <button class="btn-cancel" id="btnCancel" onclick="cancelEdit()" style="display:none;">HỦY</button>
+            </div>
+            <div class="success-msg" id="successMsg">Cập nhật hồ sơ thành công!</div>
+
+            <!-- Phần thông tin con cái -->
+            <div class="children-section">
+                <h3>THÔNG TIN CON CÁI</h3>
+                <div id="childrenList">
+                    <p style="text-align:center; color:#8892a8;">Đang tải thông tin con...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const API = "http://localhost:3000";
+    let originalData = {};
+
+    // Load hồ sơ phụ huynh
+    async function loadProfile() {
+        const res = await fetch(`${API}/api/parent/profile`, {
+            headers: { Authorization: "Bearer " + token }
+        });
+        const user = await res.json();
+
+        originalData = { ...user };
+
+        document.getElementById("fullNameDisplay").textContent = user.Fullname || "Phụ huynh";
+        document.getElementById("avatar").textContent = (user.Fullname || "PH").split(" ").pop().charAt(0).toUpperCase();
+        document.getElementById("fullname").value = user.Fullname || "";
+        document.getElementById("username").value = user.Username || "";
+        document.getElementById("email").value = user.Email || "";
+        document.getElementById("phone").value = user.Phone || "";
+        document.getElementById("address").value = user.Address || "";
+        document.getElementById("gender").value = user.Gender || "";
+
+        loadChildren(); // Load thông tin con
+    }
+
+    // Load danh sách con cái
+    async function loadChildren() {
+        const res = await fetch(`${API}/api/parent/children`, {
+            headers: { Authorization: "Bearer " + token }
+        });
+        const children = await res.json();
+
+        const container = document.getElementById("childrenList");
+        if (children.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:#d4380d;'>Chưa liên kết với học sinh nào.</p>";
+            return;
+        }
+
+        container.innerHTML = children.map(child => `
+            <div class="child-card">
+                <div class="child-avatar">
+                    ${child.Fullname.split(" ").pop().charAt(0).toUpperCase()}
+                </div>
+                <div class="child-info">
+                    <h4>${child.Fullname}</h4>
+                    <p><strong>Lớp:</strong> ${child.ClassName || "Chưa xếp lớp"}</p>
+                    <p><strong>Ngày sinh:</strong> ${child.DateOfBirth ? new Date(child.DateOfBirth).toLocaleDateString('vi-VN') : "Chưa có"}</p>
+                    <p><strong>Giới tính:</strong> ${child.Gender === "M" ? "Nam" : child.Gender === "F" ? "Nữ" : "Khác"}</p>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    // Các hàm chỉnh sửa (giữ nguyên như cũ)
+    function enableEdit() {
+        document.querySelectorAll("#email, #phone, #address, #gender, #fullname").forEach(el => {
+            el.disabled = false;
+            el.style.background = "white";
+        });
+        document.getElementById("btnEdit").style.display = "none";
+        document.getElementById("btnSave").style.display = "inline-block";
+        document.getElementById("btnCancel").style.display = "inline-block";
+    }
+
+    function cancelEdit() {
+        document.getElementById("fullname").value = originalData.Fullname || "";
+        document.getElementById("email").value = originalData.Email || "";
+        document.getElementById("phone").value = originalData.Phone || "";
+        document.getElementById("address").value = originalData.Address || "";
+        document.getElementById("gender").value = originalData.Gender || "";
+        document.querySelectorAll("input, select").forEach(el => el.disabled = true);
+        document.getElementById("btnEdit").style.display = "inline-block";
+        document.getElementById("btnSave").style.display = "none";
+        document.getElementById("btnCancel").style.display = "none";
+        document.getElementById("successMsg").style.display = "none";
+    }
+
+    async function saveProfile() {
+        const updated = {
+            Fullname: document.getElementById("fullname").value.trim(),
+            Email: document.getElementById("email").value.trim(),
+            Phone: document.getElementById("phone").value.trim(),
+            Address: document.getElementById("address").value.trim(),
+            Gender: document.getElementById("gender").value
+        };
+
+        if (!updated.Fullname) return alert("Vui lòng nhập họ tên!");
+
+        const res = await fetch(`${API}/api/parent/profile`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+            body: JSON.stringify(updated)
+        });
+
+        if (res.ok) {
+            alert("Cập nhật thành công!");
+            loadProfile(); // Reload lại để cập nhật avatar + tên
+        } else {
+            alert("Cập nhật thất bại!");
+        }
+    }
+
+    // Khởi chạy
+    loadProfile();
+</script>
+</body>
+</html>

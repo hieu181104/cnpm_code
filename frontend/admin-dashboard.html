@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 40px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            animation: slideInRight 0.5s ease;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header span {
+            color: #667eea;
+            font-weight: 800;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: all 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            color: #2d3748;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: #718096;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            color: #4a5568;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 10px 0;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .card li b {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 240px;
+                padding: 20px 15px;
+            }
+
+            .sidebar h2 {
+                font-size: 18px;
+                margin-bottom: 25px;
+            }
+
+            .sidebar a {
+                padding: 12px 12px;
+                font-size: 14px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+                padding: 25px;
+            }
+
+            .header {
+                font-size: 22px;
+                margin-bottom: 30px;
+            }
+
+            .card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .card h3 {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 15px;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .header {
+                font-size: 20px;
+                margin-bottom: 25px;
+            }
+
+            .card {
+                padding: 18px;
+                border-left: 4px solid #667eea;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="admin-dashboard.html" class="active">📊 Dashboard</a>
+        <a href="admin-users.html">👤 Quản lý tài khoản</a>
+        <a href="admin-classes.html">🏫 Quản lý lớp học</a>
+        <a href="admin-subjects.html">📚 Quản lý môn học</a>
+        <a href="admin-timetable.html">🕒 Thời khóa biểu</a>
+        <a href="admin-report.html">📈 Báo cáo học tập</a>
+        <a href="admin-notify.html">🔔 Gửi thông báo</a>
+        <a href="#" onclick="logout()">🚪 Đăng xuất</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="header">
+            Xin chào, <span id="fullname"></span> (Admin)
+        </div>
+
+        <div class="card">
+            <h3>Tổng quan hệ thống</h3>
+            <p>Quản trị viên có thể quản lý tài khoản, lớp học, môn học, thời khóa biểu và gửi thông báo.</p>
+        </div>
+
+        <div class="card">
+            <h3>Hướng dẫn</h3>
+            <ul>
+                <li>Đi tới <b>Quản lý tài khoản</b> thêm, sửa, xóa user.</li>
+                <li>Đi tới <b>Quản lý lớp học</b> để tạo lớp mới và phân công giáo viên.</li>
+                <li>Đi tới <b>Quản lý môn học</b> để thêm môn và gv dạy.</li>
+                <li>Đi tới <b>Thời khóa biểu</b> để tạo TKB theo lớp.</li>
+                <li>Đi tới <b>Báo cáo học tập</b> để xem điểm trung bình của từng lớp.</li>
+                <li>Đi tới <b>Gửi thông báo</b> để gửi thông báo đến GV/PH.</li>
+            </ul>
+        </div>
+    </div>
+
+<script>
+    // Role check
+    const role = localStorage.getItem("role");
+    if (role != 1) {
+        alert("Bạn không có quyền truy cập trang này!");
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("fullname").innerText = localStorage.getItem("fullname");
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>

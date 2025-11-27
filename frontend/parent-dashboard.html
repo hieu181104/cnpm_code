@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phụ huynh - Sổ liên lạc điện tử</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #0047b3 0%, #003a8c 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0047b3 0%, #1a73e8 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            font-size: 26px;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(0, 71, 179, 0.2);
+        }
+
+        .welcome {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 35px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* GRID LAYOUT */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .menu-card {
+            background: white;
+            padding: 32px 28px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 71, 179, 0.05) 0%, rgba(26, 115, 232, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 71, 179, 0.15);
+            border-color: #0047b3;
+        }
+
+        .menu-card:hover::before {
+            opacity: 1;
+        }
+
+        .menu-card-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .menu-card h3 {
+            color: #0047b3;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .menu-card p {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .menu-card:hover p {
+            opacity: 1;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 0;
+                font-size: 18px;
+            }
+
+            .sidebar-menu {
+                display: none;
+                flex-direction: column;
+                gap: 0;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: linear-gradient(180deg, #0047b3 0%, #003a8c 100%);
+            }
+
+            .sidebar-menu.active {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .header {
+                font-size: 20px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .menu-card {
+                padding: 24px 20px;
+            }
+
+            .menu-card-icon {
+                font-size: 40px;
+            }
+
+            .menu-card h3 {
+                font-size: 15px;
+            }
+        }
+
+        /* SCROLLBAR */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <h2>📚 Sổ Liên Lạc</h2>
+        <div class="sidebar-menu">
+            <a href="parent-dashboard.html" class="active">🏠 Trang chủ</a>
+            <a href="parent-profile.html">👤 Hồ sơ cá nhân</a>
+            <a href="parent-scores.html">📊 Kết quả học tập</a>
+            <a href="parent-timetable.html">📅 Thời khóa biểu</a>
+            <a href="parent-messages.html">💬 Trao đổi</a>
+            <a href="parent-attendance.html">✔️ Điểm danh</a>
+            <a href="parent-discipline.html">⚠️ Vi phạm</a>
+            <a href="parent-notifications.html">🔔 Thông báo</a>
+            <a href="parent-leave.html">📝 Gửi đơn nghỉ</a>
+            <a href="#" onclick="logout()">🚪 Đăng xuất</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            Chào mừng phụ huynh <span id="fullname" style="color: #ffd700;">...</span>
+        </div>
+
+        <div class="welcome">
+            🎓 Chào mừng quý phụ huynh đến với Sổ liên lạc điện tử - Nền tảng kết nối giáo dục
+        </div>
+
+        <div class="grid">
+            <div class="menu-card" onclick="location.href='parent-scores.html'">
+                <span class="menu-card-icon">📈</span>
+                <h3>Xem điểm số & hạnh kiểm</h3>
+                <p>Theo dõi kết quả học tập của con</p>
+            </div>
+            <div class="menu-card" onclick="location.href='parent-timetable.html'">
+                <span class="menu-card-icon">⏰</span>
+                <h3>Xem thời khóa biểu</h3>
+                <p>Kiểm tra lịch học hàng tuần</p>
+            </div>
+            <div class="menu-card" onclick="location.href='parent-messages.html'">
+                <span class="menu-card-icon">💌</span>
+                <h3>Trao đổi với giáo viên</h3>
+                <p>Liên hệ với các thầy cô</p>
+            </div>
+            <div class="menu-card" onclick="location.href='parent-leave.html'">
+                <span class="menu-card-icon">📋</span>
+                <h3>Gửi đơn xin nghỉ học</h3>
+                <p>Nộp đơn xin phép cho con</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    if (!token || role != 3) {
+        alert("Vui lòng đăng nhập với tài khoản phụ huynh!");
+        window.location.href = "login.html";
+    }
+    document.getElementById("fullname").innerText = localStorage.getItem("fullname") || "Phụ huynh";
+
+    function logout() {
+        if (confirm("Bạn chắc chắn muốn đăng xuất?")) {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    }
+
+    // Menu toggle cho mobile
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarMenu = document.querySelector('.sidebar-menu');
+    
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth <= 768) {
+            if (!event.target.closest('.sidebar')) {
+                sidebarMenu.classList.remove('active');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

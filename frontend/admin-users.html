@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý tài khoản</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar styling with gradient */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        /* Header with gradient background */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 30px;
+            font-size: 28px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Card styling with shadow and hover effect */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Button styling with gradient */
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Input and select styling */
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Table styling with hover effect */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background-color: #f0f2f5;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        /* Delete button styling */
+        table button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 8px 16px;
+            font-size: 13px;
+            margin-right: 0;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+        }
+
+        table button:hover {
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+                padding: 15px;
+            }
+
+            .header {
+                font-size: 20px;
+                padding: 15px 20px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 15px 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR COPY Y NGUYÊN -->
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="admin-dashboard.html">📊 Dashboard</a>
+    <a href="admin-users.html" class="active">👤 Quản lý tài khoản</a>
+    <a href="admin-classes.html">🏫 Quản lý lớp học</a>
+    <a href="admin-subjects.html">📚 Quản lý môn học</a>
+    <a href="admin-timetable.html">🕒 Thời khóa biểu</a>
+    <a href="admin-report.html">📈 Báo cáo học tập</a>
+    <a href="admin-notify.html">🔔 Gửi thông báo</a>
+    <a href="#" onclick="logout()">🚪 Đăng xuất</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <div class="header">
+        QUẢN LÝ TÀI KHOẢN
+    </div>
+
+    <div class="card">
+        <button onclick="showForm()">+ Thêm tài khoản</button>
+        <br><br>
+
+        <table border="1" width="100%" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tài khoản</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="userTable"></tbody>
+        </table>
+    </div>
+
+    <div class="card" id="formBox" style="display:none;">
+        <h3>Thêm tài khoản</h3>
+
+        <input id="uUsername" placeholder="Username"><br><br>
+        <input id="uPassword" placeholder="Password"><br><br>
+        <input id="uFullname" placeholder="Fullname"><br><br>
+        <input id="uEmail" placeholder="Email"><br><br>
+        <select id="uRole">
+            <option value="1">Admin</option>
+            <option value="2">Giáo viên</option>
+            <option value="3">Phụ huynh</option>
+        </select><br><br>
+
+        <button onclick="addUser()">Thêm</button>
+        <button onclick="hideForm()">Hủy</button>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem("role") != 1) {
+        alert("Không có quyền!");
+        window.location.href = "login.html";
+    }
+
+    function logout(){
+        localStorage.clear();
+        window.location.href = "login.html";
+    }
+
+    async function loadUsers(){
+        const res = await fetch("http://localhost:3000/api/users");
+        const users = await res.json();
+
+        let html = "";
+        users.forEach(u=>{
+            html += `
+                <tr>
+                    <td>${u.UserID}</td>
+                    <td>${u.Username}</td>
+                    <td>${u.Fullname}</td>
+                    <td>${u.Email}</td>
+                    <td>${u.Role}</td>
+                    <td>
+                        <button onclick="deleteUser(${u.UserID})">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.getElementById("userTable").innerHTML = html;
+    }
+
+    loadUsers();
+
+    function showForm(){ document.getElementById("formBox").style.display = "block"; }
+    function hideForm(){ document.getElementById("formBox").style.display = "none"; }
+
+    async function addUser(){
+        const body = {
+            Username: uUsername.value,
+            Password: uPassword.value,
+            Fullname: uFullname.value,
+            Email: uEmail.value,
+            Role: uRole.value
+        };
+
+        await fetch("http://localhost:3000/api/users/add", {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(body)
+        });
+
+        alert("Thêm thành công!");
+        hideForm();
+        loadUsers();
+    }
+
+    async function deleteUser(id){
+        if (!confirm("Xóa tài khoản này?")) return;
+
+        await fetch("http://localhost:3000/api/users/delete/"+id, {method:"DELETE"});
+        loadUsers();
+    }
+</script>
+
+</body>
+</html>
